@@ -8,11 +8,19 @@ NimBLEAdvertising *pAdvertising;
 void setup() {
   NimBLEDevice::init("");
 
-  esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ESP_PWR_LVL_P9); //This should increase transmitting power to 9dBm
-  esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P9); //Not sure if this works with NimBLE
-  esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_SCAN ,ESP_PWR_LVL_P9);
-
-  NimBLEServer *pServer = NimBLEDevice::createServer();
+    /**NimBLE ESP32: TX power setting, default 3db */
+        #ifdef ESP_PLATFORM
+    NimBLEDevice::setPower(ESP_PWR_LVL_P9); /** +9db */
+        #else
+    NimBLEDevice::setPower(9); /** +9db */
+        #endif
+    /*  Sets device IO capabilities, each option will trigger a different pairing method.
+     *  BLE_HS_IO_DISPLAY_ONLY    - Passkey pairing
+     *  BLE_HS_IO_DISPLAY_YESNO   - Numeric comparison pairing
+     *  BLE_HS_IO_NO_INPUT_OUTPUT - DEFAULT setting - just works pairing
+     *  Pulled from, NimBLE_Server Demo: Demonstrates many NimBLE server features. Author: H2zero  
+     */
+    NimBLEServer *pServer = NimBLEDevice::createServer();
 
   pAdvertising = pServer->getAdvertising();
 }
